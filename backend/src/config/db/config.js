@@ -9,7 +9,7 @@ const sequelize = new Sequelize({
   dialectOptions: {
     options: {
       encrypt: true, // Azure requiere cifrado SSL
-      trustServerCertificate: false // Importante para seguridad
+      trustServerCertificate: true // Importante para seguridad
     }
   }
 })
