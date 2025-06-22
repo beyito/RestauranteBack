@@ -1,11 +1,11 @@
-/*//import Stripe from 'stripe'
+import Stripe from 'stripe'
 import dotenv from 'dotenv'
 
 dotenv.config('../.env')
 
-//const stripe = new Stripe('sk_test_51Rafko2LimiVsaRzOfKB06A6OkIkvifDljVE7xVKZo48IZmaPPkrb01YyoY5i8XQu47O4xJFICzQR3TTcVSurPiT00SJHA1Trm')
+const stripe = new Stripe('sk_test_51Rafko2LimiVsaRzOfKB06A6OkIkvifDljVE7xVKZo48IZmaPPkrb01YyoY5i8XQu47O4xJFICzQR3TTcVSurPiT00SJHA1Trm')
 
-export class ModeloMetodoPago {/*
+export class ModeloMetodoPago {
   static async crearMetodoPago (input) {
     const total = input.reduce((acc, item) => acc + (item.precio * item.quantity), 0)
     console.log('Total a pagar:', total)
@@ -23,6 +23,4 @@ export class ModeloMetodoPago {/*
       return { error: 'Error al crear el método de pago' }
     }
   }
-    */
 }
-*/
