@@ -1,4 +1,4 @@
-//import Stripe from 'stripe'
+/*//import Stripe from 'stripe'
 import dotenv from 'dotenv'
 
 dotenv.config('../.env')
@@ -25,3 +25,4 @@ export class ModeloMetodoPago {/*
   }
     */
 }
+*/
