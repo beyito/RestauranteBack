@@ -2,7 +2,8 @@ import cors from 'cors'
 
 const ACCEPTED_ORIGINS = [
   'http://localhost:5173',
-  'https://restauranteb.onrender.com'
+  'https://restauranteb.onrender.com',
+  'https://restaurante-front-dusky.vercel.app/'
 ]
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({
