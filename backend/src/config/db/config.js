@@ -2,9 +2,9 @@ import { Sequelize } from 'sequelize'
 
 const sequelize = new Sequelize({
   database: 'Restaurante',
-  username: 'sa',
+  username: 'restaurante',
   password: 'CObuchan8',
-  host: 'localhost',
+  host: 'restauranteserver.database.windows.net',
   dialect: 'mssql',
   dialectOptions: {
     options: {
