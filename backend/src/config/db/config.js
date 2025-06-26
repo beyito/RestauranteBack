@@ -1,10 +1,10 @@
 import { Sequelize } from 'sequelize'
 
 const sequelize = new Sequelize({
-  database: process.env.DB_NAME,
-  username: process.env.DB_ADMIN,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
+  database: 'Restaurante',
+  username: 'sa',
+  password: 'CObuchan8',
+  host: 'localhost',
   dialect: 'mssql',
   dialectOptions: {
     options: {

@@ -224,8 +224,8 @@ export class ModeloPedido {
 
   static async registrarPedidoDomicilio (idCliente, descuento, productos) {
     ModeloPedido.asociar()
-    try {
-      const resultado = await sequelize.query(
+
+    const resultado = await sequelize.query(
     `DECLARE @NuevoID INT;
     EXEC set_RegistrarPedidoDomicilio
     @idCliente = :idCliente,
@@ -237,15 +237,22 @@ export class ModeloPedido {
       replacements: { idCliente, descuento },
       type: sequelize.QueryTypes.SELECT
     })
-      const idPedido = resultado[0].nuevoPedidoID
+    const idPedido = resultado[0].nuevoPedidoID
+    try {
       for (const producto of productos) {
         console.log('Producto:', producto)
-        await this.DetallePedido.create({
-          idPedido,
-          idProducto: producto.id,
-          cantidad: producto.cantidad,
-          precio: producto.precio
-        })
+        await sequelize.query(
+          'INSERT INTO DetallePedido (idPedido, idProducto, cantidad, precio) VALUES (:idPedido, :idProducto, :cantidad, :precio)',
+          {
+            replacements: {
+              idPedido,
+              idProducto: producto.id,
+              cantidad: producto.cantidad,
+              precio: producto.precio
+            },
+            type: sequelize.QueryTypes.INSERT
+          }
+        )
 
         for (const ingrediente of producto.exclusiones) {
           await this.ExclusionIngrediente.create({
@@ -258,6 +265,34 @@ export class ModeloPedido {
 
       return { message: 'Pedido registrado correctamente' }
     } catch (error) {
+      for (const producto of productos) {
+        console.log('Producto:', producto)
+        await sequelize.query(
+          'DELETE FROM DetallePedido WHERE idPedido = :idPedido AND idProducto = :idProducto',
+          {
+            replacements: {
+              idPedido,
+              idProducto: producto.id
+            },
+            type: sequelize.QueryTypes.INSERT
+          }
+        )
+
+        for (const ingrediente of producto.exclusiones) {
+          await sequelize.query(
+            'DELETE FROM ExclusionIngrediente WHERE idPedido = :idPedido AND idProducto = :idProducto AND idIngrediente = :idIngrediente',
+            {
+              replacements: {
+                idPedido,
+                idProducto: producto.id,
+                idIngrediente: ingrediente.idIngrediente
+              },
+              type: sequelize.QueryTypes.INSERT
+            }
+          )
+        }
+      }
+
       console.error('Error detallado:', error) // Para debug
       return {
         error: 'Error al registrar el pedido',

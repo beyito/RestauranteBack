@@ -44,10 +44,10 @@ export class ControladorPedido {
     const resultado = await this.ModeloPedido.registrarPedidoDomicilio(idCliente, descuento, req.body.productos)
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
     const autor = extraerUsuarioDesdeToken(req)
-  console.log(autor)
+    console.log('AUTOR TOKEN: ', autor)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Registrar Pedido a Domicilio',
         descripcion: 'Registró un pedido a domicilio',
         ip: req.ip.replace('::ffff:', '')

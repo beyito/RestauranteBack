@@ -8,7 +8,7 @@ export const expiresIn = process.env.EXPIRES_IN || '1h'
 // Configuración de cookies, sin intentar leer objeto desde env (que es string)
 export const cookieOptions = {
   httpOnly: true,
-  secure: true, // necesario si estás en https
-  sameSite: 'None', // IMPORTANTE para que funcione en cross-origin
+  secure: process.env.NODE_ENV === 'production', // solo true en producción
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
   maxAge: 1000 * 60 * 60 * 24 // 1 día
 }

@@ -2,7 +2,6 @@ export const autenticacion = (token) => {
   return (req, res, next) => {
     try {
       const tokenCookie = req.cookies.access_token
-      console.log(req.cookies)
       if (!tokenCookie) {
         return res.status(401).json({ error: 'Acceso no autorizado' })
       }
@@ -10,7 +9,7 @@ export const autenticacion = (token) => {
       req.user = decodificacion
       next()
     } catch (error) {
-      return res.status(403).json({ error: 'token invalido o expirado' })
+      return res.status(403).json({ error: 'Token inválido o expirado' })
     }
   }
 }

@@ -23,6 +23,7 @@ import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 import cors from 'cors'
 import { crearRutaMetodoPago } from './routes/metodoPago.js'
+import { corsMiddleware } from '../middleware/cors.js'
 
 export const CreateApp = async ({
   modeloAuth, modeloAdministrador,
@@ -39,10 +40,7 @@ export const CreateApp = async ({
   const token = new Token(PALABRA_SECRETA)
   modeloAuth.token = token
 
-  app.use(cors({
-    origin: 'https://restaurante-f-nine.vercel.app',
-    credentials: true
-  }))
+  app.use(corsMiddleware())
 
   app.use(cookieParser())
   app.use(json())
@@ -53,7 +51,7 @@ export const CreateApp = async ({
     res.send('¡Servidor activo en Render!')
   })
 
-  app.use('/auth', crearAuthRutas({ modeloAuth }))
+  app.use('/auth', crearAuthRutas({ modeloAuth, modeloBitacora }))
   app.use('/user', crearRutaUsuarios({ modeloUsuario, modeloBitacora })) // Hecho
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token, modeloBitacora }))
   app.use('/permisos', crearRutasPermisos({ modeloPermiso, modeloBitacora })) // Hecho

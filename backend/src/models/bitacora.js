@@ -10,7 +10,7 @@ export class ModeloBitacora {
   // Registrar Bitácora
   static async registrarBitacora ({ usuario, accion, descripcion, ip }) {
     try {
-      await ModeloBitacora.Bitacora.create({
+      await this.Bitacora.create({
         usuario,
         accion,
         descripcion,
@@ -28,7 +28,7 @@ export class ModeloBitacora {
   // Ver Bitácoras
   static async consultarBitacora () {
     try {
-      const bitacora = await ModeloBitacora.Bitacora.findAll()
+      const bitacora = await this.Bitacora.findAll()
       return bitacora
     } catch (error) {
       return {
