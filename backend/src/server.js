@@ -15,6 +15,9 @@ import { ModeloPedido } from './models/pedido.js'
 import { ModeloBitacora } from './models/bitacora.js'
 import { ModeloMetodoPago } from './models/metodoPago.js'
 import { ModeloTicket } from './models/ticket.js'
+import { ModeloCompra } from './models/compra.js'
+import { ModeloDescuento } from './models/descuento.js'
+
 CreateApp({
   modeloAuth: ModeloAuth,
   modeloProveedor: ModeloProveedor,
@@ -30,5 +33,7 @@ CreateApp({
   modeloPedido: ModeloPedido,
   modeloBitacora: ModeloBitacora,
   modeloMetodoPago: ModeloMetodoPago,
-  modeloTicket: ModeloTicket
+  modeloTicket: ModeloTicket,
+  modeloCompra: ModeloCompra,
+  modeloDescuento: ModeloDescuento
 })

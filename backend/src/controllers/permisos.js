@@ -12,7 +12,7 @@ export class ControladorPermisos {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Crear Permiso',
           descripcion: 'Creó el permiso : ' + permiso.nombre,
           ip: req.ip.replace('::ffff:', '')
@@ -31,7 +31,7 @@ export class ControladorPermisos {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Editar Permiso',
           descripcion: 'Editó el permiso : ' + permiso.nombre,
           ip: req.ip.replace('::ffff:', '')
@@ -52,7 +52,7 @@ export class ControladorPermisos {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Eliminar Permiso',
           descripcion: 'Eliminó el permiso : ' + permiso.nombre,
           ip: req.ip.replace('::ffff:', '')

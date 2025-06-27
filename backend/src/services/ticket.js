@@ -41,7 +41,16 @@ export const definicionTicket = {
       model: 'Usuario',
       key: 'id'
     }
+  },
+  idCliente: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'ClienteWeb',
+      key: 'idUsuario'
+    }
   }
+
 }
 export const definicionMetodoPago = {
   id: {

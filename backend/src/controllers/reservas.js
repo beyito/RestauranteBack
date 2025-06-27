@@ -13,7 +13,7 @@ export class ControladorReservas {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Registrar Reserva',
           descripcion: 'Registró una reserva',
           ip: req.ip.replace('::ffff:', '')
@@ -32,7 +32,7 @@ export class ControladorReservas {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Editar Reserva',
         descripcion: 'Editó la reserva con id : ' + req.body.id,
         ip: req.ip.replace('::ffff:', '')
@@ -49,7 +49,7 @@ export class ControladorReservas {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Cancelar Reserva',
         descripcion: 'Canceló la reserva con id : ' + req.params.id,
         ip: req.ip.replace('::ffff:', '')

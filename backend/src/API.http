@@ -32,7 +32,7 @@ GET http://localhost:3000/user/verUsuarios
 GET http://localhost:3000/productos/mostrar?tipo
 
 ###
-GET http://localhost:3000/user/ed
+GET http://localhost:3000/user/3
 
 ###
 POST http://localhost:3000/auth/login
@@ -43,6 +43,19 @@ Content-Type: application/json
     "nombreUsuario": "admin",	
     "password": "123"
 } 
+###
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "nombreUsuario": "prueba3",
+  "correo": "marta1231233@example.com",
+  "direccion": "Calle Falsa 1233",
+  "nombre": "prueba3",
+  "password": "123",
+  "confirm": "123",
+  "telefono": "12345678329"
+}
 
 ###
 GET http://localhost:3000/auth/verificar
@@ -420,6 +433,65 @@ GET http://localhost:3000/pedido/pendientes
 ### 
 GET http://localhost:3000/pedido/cliente/5
 
+
+### registrar compra
+POST http://localhost:3000/compra/crear
+Content-Type: application/json
+
+{
+  "fecha": "2025-06-17",
+  "idproveedor": 1,
+  "idUsuario": 1,
+  "ingredientes": [
+    { "idIngrediente": 1, "cantidad": 2, "precio": 10.5 },
+    { "idIngrediente": 2, "cantidad": 1, "precio": 7.25 }
+  ],
+  "bebidas": [
+    { "idProducto": 3, "cantidad": 5, "precio": 4.5 }
+  ]
+}
+
+### Editar compra
+PUT http://localhost:3000/compra/editar
+Content-Type: application/json
+
+{
+  "id": 23,
+  "fecha": "2025-06-17",
+  "idproveedor": 3,
+  "idUsuario": 1,
+  "ingredientes": [
+    {
+      "idIngrediente": 1,
+      "cantidad": 5,
+      "precio": 12.5
+    },
+    {
+      "idIngrediente": 2,
+      "cantidad": 3,
+      "precio": 8.0
+    }
+  ],
+  "bebidas": [
+    {
+      "idProducto": 4,
+      "cantidad": 10,
+      "precio": 2.5
+    }
+  ]
+}
+
+### eliminar compra
+DELETE http://localhost:3000/compra/eliminar
+Content-Type: application/json
+
+{
+  "id": 22
+}
+
+### mostrar Compras
+GET http://localhost:3000/compra/mostrar 
+
 ###
 GET http://localhost:3000/admin/bitacora
 
@@ -430,3 +502,81 @@ Content-Type: application/json
 {
   "id":1
 }
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+### aumentar puntos de fidelidad
+PATCH http://localhost:3000/user/aumentarPuntosFidelidad/4
+Content-Type: application/json
+
+{
+  "puntosFidelidad": 30
+}
+
+### disminuir puntos de fidelidad
+PATCH http://localhost:3000/user/disminuirPuntosFidelidad/4
+Content-Type: application/json
+
+{
+  "puntosFidelidad": 80
+}
+
+### editar puntos de fidelidad
+PATCH http://localhost:3000/user/editarPuntosFidelidad/4
+Content-Type: application/json
+
+{
+  "puntosFidelidad": 80
+}
+
+### ver Clientes
+GET http://localhost:3000/user/verClientes
+=======
+>>>>>>> 2a2de36e2f2f8f7466bb4c8821b2c170081ec63d
+=======
+
+### Crear Descuento
+POST http://localhost:3000/descuentos/crear 
+Content-Type: application/json
+
+{
+  "descuento": 0.06,
+  "costoFidelidad": 150
+}
+
+### Editar Descuento
+PUT http://localhost:3000/descuentos/editar
+Content-Type: application/json
+
+{
+  "id": 3,
+  "costoFidelidad": 200
+}
+
+### Eliminar Descuento
+DELETE http://localhost:3000/descuentos/eliminar
+Content-Type: application/json
+
+{
+  "id": 4
+}
+
+### mostrar descuentos
+GET http://localhost:3000/descuentos/mostrar
+
+### canjear descuento
+POST http://localhost:3000/descuentos/canjear/6
+Content-Type: application/json
+
+{
+  "idDescuento": 2,
+  "codigo": "DYSCP007",
+  "idEstado": 1
+}
+
+### obtener puntos de fidelidad
+GET http://localhost:3000/descuentos/obtenerPuntosFidelidad/6
+>>>>>>> 9abf84358bcb82a29da2a070b142e38071f40f2e
+
+### mostrar descuentos
+GET http://localhost:3000/descuentos/obtenerDescuentosObtenidosSinCanjear/38

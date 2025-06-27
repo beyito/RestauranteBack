@@ -7,6 +7,7 @@ export const crearRutasTicket = ({ modeloTicket, modeloBitacora }) => {
 
   router.get('/mostrar', controlador.ObtenerTickets)
   router.get('/mostrar/:idTicket', controlador.ObtenerDetalleTicket)
+  router.get('/pagados', controlador.ObtenerTicketsPagados)
 
   return router
 }

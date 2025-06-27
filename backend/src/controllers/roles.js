@@ -12,8 +12,8 @@ export class ControladorRoles {
       if (rol.error) return res.status(400).json({ error: rol.error })
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
-        await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+        await this.modeloBitacora.registrarBitacora({
+          usuario: autor.nombreUsuario,
           accion: 'Crear Rol',
           descripcion: 'Creó el rol : ' + rol.nombre,
           ip: req.ip.replace('::ffff:', '')
@@ -31,8 +31,8 @@ export class ControladorRoles {
       if (rol.error) return res.status(400).json({ error: rol.error })
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
-        await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+        await this.modeloBitacora.registrarBitacora({
+          usuario: autor.nombreUsuario,
           accion: 'Editar Rol',
           descripcion: 'Editó el rol : ' + rol.nombre,
           ip: req.ip.replace('::ffff:', '')
@@ -52,8 +52,8 @@ export class ControladorRoles {
       if (rol.error) return res.status(400).json({ error: rol.error })
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
-        await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+        await this.modeloBitacora.registrarBitacora({
+          usuario: autor.nombreUsuario,
           accion: 'Eliminar Rol',
           descripcion: 'Eliminó el rol : ' + rol.nombre,
           ip: req.ip.replace('::ffff:', '')

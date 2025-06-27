@@ -1,5 +1,6 @@
 import sequelize from '../config/db/config.js'
 import bcrypt from 'bcrypt'
+import { Sequelize } from 'sequelize'
 
 import { definicionUsuario, definicionEmpleado, definicionClienteWeb } from '../services/user.js'
 
@@ -18,6 +19,27 @@ export class ModeloUsuario {
     timestamps: false,
     freezeTableName: true
   })
+
+  static asociar () {
+    this.Usuario.hasOne(this.ClienteWeb, {
+      foreignKey: 'idUsuario',
+      sourceKey: 'id'
+    })
+    this.ClienteWeb.belongsTo(this.Usuario, {
+      foreignKey: 'idUsuario',
+      targetKey: 'id'
+    })
+
+    // Relación Usuario - Empleado
+    this.Usuario.hasOne(this.Empleado, {
+      foreignKey: 'idUsuario',
+      sourceKey: 'id'
+    })
+    this.Empleado.belongsTo(this.Usuario, {
+      foreignKey: 'idUsuario',
+      targetKey: 'id'
+    })
+  }
 
   static async registrarUsuario ({ input }) {
     const { nombreUsuario, nombre, password, correo, telefono, idRol, tipoUsuario, ci = null } = input.data
@@ -128,6 +150,105 @@ export class ModeloUsuario {
     } catch (error) {
       console.error(error)
       throw new Error('Error al buscar Usuario')
+    }
+  }
+
+  static async aumentarPuntosFidelidad ({ id, input }) {
+    const { puntosFidelidad } = input.data
+    try {
+      const usuario = await this.Usuario.findByPk(id)
+      if (!usuario) return { error: 'Error: Usuario no encontrado' }
+      if (usuario.tipoUsuario !== 'cliente') return { error: 'Error: Solo los clientes pueden tener puntos de fidelidad' }
+
+      const cliente = await this.ClienteWeb.findOne({
+        where: { idUsuario: usuario.id }
+      })
+
+      if (!cliente) return { error: 'Error: Cliente no encontrado' }
+
+      cliente.puntosFidelidad += puntosFidelidad
+      await cliente.save()
+
+      return { mensaje: `Puntos de fidelidad actualizados a ${cliente.puntosFidelidad}` }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error al aumentar los puntos de fidelidad')
+    }
+  }
+
+  static async disminuirPuntosFidelidad ({ id, input }) {
+    const { puntosFidelidad } = input.data
+    try {
+      const usuario = await this.Usuario.findByPk(id)
+      if (!usuario) return { error: 'Error: Usuario no encontrado' }
+      if (usuario.tipoUsuario !== 'cliente') return { error: 'Error: Solo los clientes pueden tener puntos de fidelidad' }
+
+      const cliente = await this.ClienteWeb.findOne({
+        where: { idUsuario: usuario.id }
+      })
+
+      if (!cliente) return { error: 'Error: Cliente no encontrado' }
+
+      if (cliente.puntosFidelidad < puntosFidelidad) {
+        return { error: 'Error: No hay suficientes puntos de fidelidad' }
+      }
+
+      cliente.puntosFidelidad -= puntosFidelidad
+      await cliente.save()
+
+      return { mensaje: `Puntos de fidelidad actualizados a ${cliente.puntosFidelidad}` }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error al disminuir los puntos de fidelidad')
+    }
+  }
+
+  static async editarPuntosFidelidad ({ id, input }) {
+    const { puntosFidelidad } = input.data
+    try {
+      const usuario = await this.Usuario.findByPk(id)
+      if (!usuario) return { error: 'Error: Usuario no encontrado' }
+      if (usuario.tipoUsuario !== 'cliente') return { error: 'Error: Solo los clientes pueden tener puntos de fidelidad' }
+
+      const cliente = await this.ClienteWeb.findOne({
+        where: { idUsuario: usuario.id }
+      })
+
+      if (!cliente) return { error: 'Error: Cliente no encontrado' }
+
+      cliente.puntosFidelidad = puntosFidelidad
+      await cliente.save()
+
+      return { mensaje: `Puntos de fidelidad actualizados a ${cliente.puntosFidelidad}` }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error al editar los puntos de fidelidad')
+    }
+  }
+
+  static async verClientes () {
+    try {
+      this.asociar()
+      const clientes = await this.Usuario.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'nombreUsuario', // solo este campo de Usuario
+          [Sequelize.col('ClienteWeb.puntosFidelidad'), 'puntosFidelidad']
+        ],
+        include: {
+          model: this.ClienteWeb,
+          required: true,
+          attributes: [] // evita incluir ClienteWeb.*
+        },
+        raw: true,
+        nest: false
+      })
+      if (!clientes) return { error: 'Error: No hay clientes' }
+      return { clientes }
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error al obtener los clientes')
     }
   }
 }

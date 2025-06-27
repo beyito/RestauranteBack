@@ -1,3 +1,6 @@
+import { ModeloBitacora } from '../src/models/bitacora.js'
+import { extraerUsuarioDesdeToken } from '../src/utils/extraerUsuarioDesdeToken.js'
+
 export const autenticacion = (token) => {
   return (req, res, next) => {
     try {
@@ -23,6 +26,15 @@ export const autorizacion = (roles = []) => {
   }
 }
 
-export const clearToken = (req, res) => {
-  res.clearCookie('access_token').json({ message: 'cerrada con exito' })
+export const clearToken = async (req, res) => {
+  const autor = extraerUsuarioDesdeToken(req)
+  if (autor) {
+    await ModeloBitacora.registrarBitacora({
+      usuario: autor.nombreUsuario,
+      accion: 'Cerrar Sesión',
+      descripcion: 'Se cerró la sesión',
+      ip: req.ip.replace('::ffff:', '')
+    })
+    res.clearCookie('access_token').json({ message: 'cerrada con exito' })
+  }
 }

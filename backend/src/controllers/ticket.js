@@ -12,7 +12,7 @@ export class ControladorTicket {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Obtener Tickets',
         descripcion: 'Obtuvo tickets',
         ip: req.ip.replace('::ffff:', '')
@@ -27,12 +27,29 @@ export class ControladorTicket {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Obtener Detalle Ticket',
         descripcion: 'Obtuvo detalle del ticket',
         ip: req.ip.replace('::ffff:', '')
       })
     }
     return res.status(201).json(ticket)
+  }
+
+  ObtenerTicketsPagados = async (req, res) => {
+    const tickets = await this.ModeloTicket.ObtenerTicketsPagados()
+    if (tickets.error) return res.status(400).json({ error: tickets.error })
+
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Obtener Tickets Pagados',
+        descripcion: 'Obtuvo tickets con estado Pagado',
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
+
+    return res.status(201).json(tickets)
   }
 }

@@ -12,7 +12,7 @@ export class ControladorMenu {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Crear Menú',
         descripcion: 'Se agregó un menú para el día : ' + req.body.dia,
         ip: req.ip.replace('::ffff:', '')
@@ -30,7 +30,7 @@ export class ControladorMenu {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Editar Menú',
         descripcion: 'Se editó el menú con id : ' + id,
         ip: req.ip.replace('::ffff:', '')
@@ -47,7 +47,7 @@ export class ControladorMenu {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Elminar Menú',
         descripcion: 'Se eliminó el menú con id : ' + id,
         ip: req.ip.replace('::ffff:', '')

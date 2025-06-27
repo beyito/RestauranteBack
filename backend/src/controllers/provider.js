@@ -14,7 +14,7 @@ export class ControladorProveedor {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Registrar Proveedor',
         descripcion: 'Registró al Proveedor : ' + provider.nombre,
         ip: req.ip.replace('::ffff:', '')
@@ -38,7 +38,7 @@ export class ControladorProveedor {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Eliminar Proveedor',
         descripcion: 'Eliminó al Proveedor con id: ' + id,
         ip: req.ip.replace('::ffff:', '')
@@ -56,8 +56,8 @@ export class ControladorProveedor {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
-        accion: 'Eliminar Proveedor',
+        usuario: autor.nombreUsuario,
+        accion: 'Actualizar Proveedor',
         descripcion: 'Actualizó al Proveedor : ' + req.body.nombre,
         ip: req.ip.replace('::ffff:', '')
       })
@@ -73,7 +73,7 @@ export class ControladorProveedor {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Restaurar Proveedor',
         descripcion: 'Restauró al Proveedor con id: ' + id,
         ip: req.ip.replace('::ffff:', '')

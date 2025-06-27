@@ -17,13 +17,13 @@ import { crearRutasReceta } from './routes/receta.js'
 import { crearRutasProducto } from './routes/producto.js'
 import { crearRutaIngrediente } from './routes/ingrediente.js'
 import { crearRutasTicket } from './routes/ticket.js'
-
+import { crearRutasCompra } from './routes/compra.js'
 import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
-import cors from 'cors'
 import { crearRutaMetodoPago } from './routes/metodoPago.js'
 import { corsMiddleware } from '../middleware/cors.js'
+import { crearRutaDescuento } from './routes/descuento.js'
 
 export const CreateApp = async ({
   modeloAuth, modeloAdministrador,
@@ -33,7 +33,9 @@ export const CreateApp = async ({
   modeloReserva, modeloReceta,
   modeloProducto, modeloIngrediente,
   modeloPedido, modeloBitacora,
-  modeloMetodoPago, modeloTicket
+  modeloMetodoPago, modeloTicket,
+  modeloCompra,
+  modeloDescuento
 }) => {
   const app = express()
 
@@ -60,16 +62,18 @@ export const CreateApp = async ({
   app.use('/inventario', crearRutasInventario({ modeloInventario, modeloBitacora })) // Hecho
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor, modeloBitacora })) // Hecho
 
-  app.use('/productos', crearRutasProducto({ modeloProducto })) // Haciendo, Ciclo 3
+  app.use('/productos', crearRutasProducto({ modeloProducto, modeloBitacora })) // Haciendo, Ciclo 3
   app.use('/ingredientes', crearRutaIngrediente({ modeloIngrediente, modeloBitacora })) // Hecho
 
   app.use('/menus', crearMenuRutas({ modeloMenu, modeloBitacora })) // Hecho
-  app.use('/pedido', crearRutasPedido({ modeloPedido, modeloBitacora })) // Hecho
+  app.use('/pedido', crearRutasPedido({ modeloPedido, modeloBitacora, modeloInventario })) // Hecho
   app.use('/reservas', crearRutasReservas({ modeloReserva, modeloBitacora })) // Hecho
   app.use('/recetas', crearRutasReceta({ modeloReceta, modeloBitacora })) // Hecho
+  app.use('/compra', crearRutasCompra({ modeloCompra, modeloBitacora }))
 
-  app.use('/metodoPago', crearRutaMetodoPago({ modeloMetodoPago }))
+  app.use('/metodoPago', crearRutaMetodoPago({ modeloMetodoPago, modeloBitacora })) // Hecho
   app.use('/ticket', crearRutasTicket({ modeloTicket, modeloBitacora }))
+  app.use('/descuentos', crearRutaDescuento({ modeloDescuento, modeloBitacora }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

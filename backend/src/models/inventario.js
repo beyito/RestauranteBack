@@ -128,4 +128,20 @@ export class ModeloInventario {
       throw new Error('Error al consultar stock por ID: ' + error.message)
     }
   }
+
+  // Devuelve todos los productos cuyo stock está por debajo del mínimo
+  static async obtenerProductosConStockBajo () {
+    try {
+      const resultado = await this.mostrarStocks()
+      const productos = resultado.stock
+
+      const productosBajos = productos.filter(p =>
+        parseInt(p.stockActual) <= parseInt(p.stockMinimo)
+      )
+
+      return productosBajos
+    } catch (error) {
+      throw new Error('Error al verificar inventario completo: ' + error.message)
+    }
+  }
 }

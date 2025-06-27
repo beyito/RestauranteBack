@@ -1,7 +1,7 @@
 import sequelize from '../config/db/config.js'
 import { definicionTicket, definicionMetodoPago } from '../services/ticket.js'
 import { definicionPedido, definicionDetallePedido, definicionEstado } from '../services/pedido.js'
-import { definicionUsuario, definicionEmpleado } from '../services/user.js'
+import { definicionUsuario, definicionEmpleado, definicionClienteWeb } from '../services/user.js'
 import { definicionProducto } from '../services/producto.js'
 
 export class ModeloTicket {
@@ -45,6 +45,11 @@ export class ModeloTicket {
     freezeTableName: true
   })
 
+  static ClienteWeb = sequelize.define('ClienteWeb', definicionClienteWeb, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
   static asociado = false
 
   static asociar () {
@@ -66,6 +71,12 @@ export class ModeloTicket {
     this.Ticket.belongsTo(this.MetodoPago, { foreignKey: 'idMetodoPago' })
     this.MetodoPago.hasMany(this.Ticket, { foreignKey: 'idMetodoPago' })
 
+    // Relación ClienteWeb → Usuario
+    this.ClienteWeb.belongsTo(this.Usuario, { foreignKey: 'idUsuario', as: 'Usuario' })
+
+    // Relación Ticket → ClienteWeb
+    this.Ticket.belongsTo(this.ClienteWeb, { foreignKey: 'idCliente', as: 'Cliente' })
+
     this.asociado = true
   }
 
@@ -84,7 +95,17 @@ export class ModeloTicket {
               as: 'Usuario',
               attributes: ['nombre']
             }
+          },
+          {
+            model: this.ClienteWeb,
+            as: 'Cliente',
+            include: {
+              model: this.Usuario,
+              as: 'Usuario',
+              attributes: ['nombre']
+            }
           }
+
         ],
         order: [['id', 'ASC']]
       })
@@ -96,10 +117,11 @@ export class ModeloTicket {
         monto: ticket.monto,
         estado: ticket.Estado ? ticket.Estado.nombre : null,
         empleado: ticket.Empleado?.Usuario?.nombre || null,
+        cliente: ticket.Cliente?.Usuario?.nombre || null,
         metodoDePago: ticket.MetodoPago ? ticket.MetodoPago.descripcion : null
       }))
     } catch (error) {
-      console.error(error)
+      console.error('Error al obtener tickets:', error)
       return { error: 'Error al obtener tickets' }
     }
   }
@@ -131,7 +153,17 @@ export class ModeloTicket {
               as: 'Usuario',
               attributes: ['nombre']
             }
+          },
+          {
+            model: this.ClienteWeb,
+            as: 'Cliente',
+            include: {
+              model: this.Usuario,
+              as: 'Usuario',
+              attributes: ['nombre']
+            }
           }
+
         ]
       })
 
@@ -146,6 +178,7 @@ export class ModeloTicket {
         estado: ticket.Estado?.descripcion,
         metodoDePago: ticket.MetodoPago?.descripcion,
         empleado: ticket.Empleado?.Usuario?.nombre || null,
+        cliente: ticket.Cliente?.Usuario?.nombre || null,
         detalles: ticket.Pedido?.DetallePedidos?.map(d => ({
           producto: d.Producto?.nombre,
           cantidad: d.cantidad,
@@ -156,6 +189,44 @@ export class ModeloTicket {
     } catch (error) {
       console.error(error)
       return { error: 'Error al obtener detalle del ticket' }
+    }
+  }
+
+  static async ObtenerTicketsPagados () {
+    this.asociar()
+    try {
+      const tickets = await this.Ticket.findAll({
+        where: {
+          idEstado: 8
+        },
+        include: [
+          { model: this.Estado, attributes: { exclude: [] } },
+          { model: this.MetodoPago, attributes: ['descripcion'] },
+          {
+            model: this.Empleado,
+            as: 'Empleado',
+            include: {
+              model: this.Usuario,
+              as: 'Usuario',
+              attributes: ['nombre']
+            }
+          }
+        ],
+        order: [['id', 'ASC']]
+      })
+
+      return tickets.map(ticket => ({
+        id: ticket.id,
+        numero: ticket.nro,
+        fecha: ticket.fecha,
+        monto: ticket.monto,
+        estado: ticket.Estado?.nombre || null,
+        empleado: ticket.Empleado?.Usuario?.nombre || null,
+        metodoDePago: ticket.MetodoPago?.descripcion || null
+      }))
+    } catch (error) {
+      console.error(error)
+      return { error: 'Error al obtener tickets pagados' }
     }
   }
 }

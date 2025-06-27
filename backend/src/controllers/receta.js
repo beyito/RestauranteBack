@@ -11,7 +11,7 @@ export class ControladorRecetas {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Crear Receta',
         descripcion: 'Creó una receta',
         ip: req.ip.replace('::ffff:', '')
@@ -26,7 +26,7 @@ export class ControladorRecetas {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Editar Receta',
         descripcion: 'Editó una receta',
         ip: req.ip.replace('::ffff:', '')
@@ -42,7 +42,7 @@ export class ControladorRecetas {
     const autor = extraerUsuarioDesdeToken(req)
     if (autor) {
       await this.ModeloBitacora.registrarBitacora({
-        usuario: autor,
+        usuario: autor.nombreUsuario,
         accion: 'Eliminar Receta',
         descripcion: 'Eliminó una receta',
         ip: req.ip.replace('::ffff:', '')
@@ -55,5 +55,21 @@ export class ControladorRecetas {
     const receta = await this.modeloReceta.mostrarRecetaPorProducto()
     if (receta.error) return res.status(400).json({ error: receta.detalles })
     return res.status(200).json(receta)
+  }
+
+  mostrarRecetaPorIdProducto = async (req, res) => {
+    try {
+      const { idProducto } = req.params
+      if (!idProducto || isNaN(Number(idProducto))) {
+        return res.status(400).json({ error: 'ID de producto inválido' })
+      }
+      const receta = await this.modeloReceta.mostrarRecetaPorIdProducto({ idProducto })
+      if (!receta || receta.length === 0) {
+        return res.status(404).json({ error: 'No se encontró receta para este producto' })
+      }
+      return res.status(200).json(receta)
+    } catch (error) {
+      return res.status(500).json({ error: 'Error interno del servidor' })
+    }
   }
 }

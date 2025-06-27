@@ -1,7 +1,8 @@
 import sequelize from '../config/db/config.js'
 import bcrypt from 'bcrypt'
 
-import { definicionUsuario } from '../services/user.js'
+import { definicionClienteWeb, definicionUsuario } from '../services/user.js'
+import { Op } from 'sequelize'
 
 export class ModeloAuth {
   constructor (token) {
@@ -12,6 +13,23 @@ export class ModeloAuth {
     timestamps: false,
     freezeTableName: true
   })
+
+  static ClienteWeb = sequelize.define('ClienteWeb', definicionClienteWeb, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
+  static asociate () {
+    this.Usuario.hasOne(this.ClienteWeb, {
+      foreignKey: 'idUsuario',
+      as: 'clienteWeb'
+    })
+
+    this.ClienteWeb.belongsTo(this.Usuario, {
+      foreignKey: 'idUsuario',
+      as: 'usuario'
+    })
+  }
 
   static async login ({ input }) {
     const { nombreUsuario, password } = input.data
@@ -40,6 +58,63 @@ export class ModeloAuth {
     }
   }
 
+  static async register ({ input }) {
+    const {
+      correo, direccion, nombre, nombreUsuario, password, telefono, tipoUsuario,
+      idRol, idEstado, puntosFidelidad
+    } = input.data
+
+    try {
+      const buscarUsuario = await this.Usuario.findOne({
+        where: {
+          [Op.or]: [ // Operador OR de Sequelize
+            { nombreUsuario },
+            { correo }
+          ]
+        }
+      })
+
+      if (buscarUsuario) {
+        // Mensaje más específico sobre qué campo está duplicado
+        if (buscarUsuario.nombreUsuario === nombreUsuario) {
+          return { error: 'Error: El nombre de usuario ya está en uso' }
+        }
+        if (buscarUsuario.correo === correo) {
+          return { error: 'Error: El correo electrónico ya está registrado' }
+        }
+        return { error: 'Error: Usuario ya existente' } // Fallback genérico
+      }
+
+      const passwordHash = await bcrypt.hash(password, 10)
+
+      const nuevoUsuario = await this.Usuario.create({
+        correo,
+        nombre,
+        nombreUsuario,
+        tipoUsuario,
+        password: passwordHash,
+        telefono,
+        idRol,
+        idEstado
+      })
+
+      await this.ClienteWeb.create({
+        idUsuario: nuevoUsuario.id,
+        direccion,
+        puntosFidelidad
+      })
+
+      const usuarioCompleto = await this.Usuario.findByPk(nuevoUsuario.id, {
+        include: [{ model: this.ClienteWeb, as: 'clienteWeb' }]
+      })
+
+      return usuarioCompleto
+    } catch (error) {
+      console.error('Error detallado:', error)
+      throw new Error(`Error al registrar usuario: ${error.message}`)
+    }
+  }
+
   static async perfil ({ input }) {
     const id = input.id
     const user = await this.Usuario.findByPk(id)
@@ -56,3 +131,4 @@ export class ModeloAuth {
     }
   }
 }
+ModeloAuth.asociate()

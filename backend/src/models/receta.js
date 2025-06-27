@@ -182,5 +182,40 @@ export class ModeloReceta {
       }
     }
   }
+
+  static async mostrarRecetaPorIdProducto ({ idProducto }) {
+    try {
+      const producto = await this.Producto.findOne({
+        where: { id: idProducto },
+        attributes: [], // No traemos atributos del producto
+        include: [
+          {
+            model: this.Ingredientes,
+            attributes: ['id', 'nombre'],
+            through: {
+              attributes: ['cantidad']
+            }
+          }
+        ]
+      })
+
+      if (!producto) {
+        return { error: 'Producto no encontrado' }
+      }
+
+      const ingredientes = producto.Ingredientes.map(ing => ({
+        idIngrediente: ing.id,
+        nombreIngrediente: ing.nombre,
+        cantidad: ing.Receta.cantidad
+      }))
+
+      return ingredientes
+    } catch (error) {
+      return {
+        error: 'Error al mostrar los ingredientes',
+        detalles: error.message
+      }
+    }
+  }
 }
 ModeloReceta.asociar()

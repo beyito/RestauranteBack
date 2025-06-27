@@ -1,4 +1,5 @@
 import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
+
 export class ControladorInventario {
   constructor ({ modeloInventario, modeloBitacora }) {
     this.ModeloInventario = modeloInventario
@@ -13,7 +14,7 @@ export class ControladorInventario {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Agregar Stock',
           descripcion: 'Agregó Stock al producto : ' + stock.descripcion,
           ip: req.ip.replace('::ffff:', '')
@@ -33,7 +34,7 @@ export class ControladorInventario {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Disminuir Stock',
           descripcion: 'Disminuyó Stock ',
           ip: req.ip.replace('::ffff:', '')
@@ -47,8 +48,10 @@ export class ControladorInventario {
 
   // Actualizar producto existente
   actualizarStock = async (req, res) => {
+    console.log(req.body)
     try {
-      if (!req.body.id || !req.body.nuevoStockActual || !req.body.nuevoStockMinimo) {
+      const { id, nuevoStockActual, nuevoStockMinimo } = req.body
+      if (id === undefined || nuevoStockActual === undefined || nuevoStockMinimo === undefined) {
         return res.status(400).json({ error: 'ID del producto, nuevo stock actual y nuevo stock mínimo son requeridos' })
       }
       const stock = await this.ModeloInventario.actualizarStock(req.body)
@@ -56,7 +59,7 @@ export class ControladorInventario {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Actualizar Stock',
           descripcion: 'Actualizó Stock',
           ip: req.ip.replace('::ffff:', '')
@@ -64,6 +67,7 @@ export class ControladorInventario {
       }
       return res.status(200).json(stock)
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ error: 'Error interno del servidor' })
     }
   }
@@ -88,6 +92,22 @@ export class ControladorInventario {
       return res.status(200).json(resultado)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
+    }
+  }
+
+  // obntener con stock bajo
+  obtenerProductosConStockBajo = async (req, res) => {
+    try {
+      const stock = await this.ModeloInventario.obtenerProductosConStockBajo()
+      if (stock.length === 0) {
+        return res.status(200).json({ mensaje: 'No hay productos con stock bajo' })
+      }
+      return res.status(200).json({ productosConStockBajo: stock })
+    } catch (error) {
+      return res.status(500).json({
+        error: 'Error al obtener inventario',
+        detalles: error.message
+      })
     }
   }
 }

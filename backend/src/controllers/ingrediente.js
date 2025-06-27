@@ -12,7 +12,7 @@ export class ControladorIngrediente {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Crear Ingrediente',
           descripcion: 'Agregó el Ingrediente : ' + ingrediente.nombre,
           ip: req.ip.replace('::ffff:', '')
@@ -31,7 +31,7 @@ export class ControladorIngrediente {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
+          usuario: autor.nombreUsuario,
           accion: 'Editar Ingrediente',
           descripcion: 'Editó el Ingrediente con id: ' + ingrediente.id,
           ip: req.ip.replace('::ffff:', '')
@@ -52,8 +52,8 @@ export class ControladorIngrediente {
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
         await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
-          accion: 'EliminarIngrediente',
+          usuario: autor.nombreUsuario,
+          accion: 'Eliminar Ingrediente',
           descripcion: 'Eliminó el Ingrediente con id: ' + id,
           ip: req.ip.replace('::ffff:', '')
         })

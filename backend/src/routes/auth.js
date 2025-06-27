@@ -8,6 +8,7 @@ export const crearAuthRutas = ({ modeloAuth, modeloBitacora }) => {
   const controladorAuth = new ControladorAuth({ modeloAuth, modeloBitacora })
   Authruta.post('/login', controladorAuth.login)
   Authruta.get('/logout', clearToken)
+  Authruta.post('/register', controladorAuth.register)
   Authruta.get('/verificar', middleware, controladorAuth.perfil)
   return Authruta
 }
